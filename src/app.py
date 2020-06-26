@@ -14,9 +14,14 @@ from stem.control import Controller
 
 from models.tracking_number import TrackingNumber
 
-DRIVER_URL = '/Users/chiennv/personal/spy/code01/chromedriver'
+DRIVER_URL = '/home/upinus/17track-crawler/chromedriver_linux'
 options = webdriver.ChromeOptions()
+options.add_argument('--headless')
 options.add_argument('--proxy-server=socks5://127.0.0.1:9050')
+options.add_argument(
+    '--user-agent=5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.3497.100 Safari/537.36'
+)
+
 
 
 driver = webdriver.Chrome(DRIVER_URL, options=options)
@@ -73,7 +78,7 @@ def get_proxies():
 # signal TOR for a new connection
 def switch_ip():
     with Controller.from_port(port=9051) as controller:
-        controller.authenticate()
+        controller.authenticate(password='upinus2017')
         controller.signal(Signal.NEWNYM)
 
 
