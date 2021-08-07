@@ -11,6 +11,7 @@ selenium = "*"
 python-dateutil = "*"
 stem = "*"
 click = "*"
+pyperclip = "*"
 
 [requires]
 python_version = "3.7"

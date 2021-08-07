@@ -1,6 +1,7 @@
 import os
 import time
 
+import pyperclip
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
@@ -86,15 +87,15 @@ class Crawl17Track:
 
         self.__normalize(tracking_numbers)
         self.__open_17track(tracking_numbers)
-        self.__close_intro_if_existed()
-        self.__check_request_limitation()
+        # self.__close_intro_if_existed()
+        # self.__check_request_limitation()
         self.__choose_carriers_if_ambiguous()
 
         return self.__get_tracking_details()
 
     def __open_17track(self, tracking_numbers):
         self.driver.get(
-            'https://t.17track.net/en#nums=' + ','.join(tracking_numbers)
+            'https://www.trackdog.com/track.html?tn=' + ','.join(tracking_numbers)
         )
         self.__wait_for_ajax_completed()
 
@@ -150,16 +151,15 @@ class Crawl17Track:
 
     def __get_tracking_details(self):
         driver = self.driver
-        detail_buttons = driver.find_elements_by_css_selector(
-            'button[data-copy-details]'
+        copy_all_button = driver.find_element_by_xpath(
+            "//div[contains(@class, 'batch_operation_box')]//a[contains(@class, 'iconfuzhi')]"
         )
+        copy_all_button.click()
 
-        if len(detail_buttons) == 0:
-            raise Exception('Can not find any result')
+        all_detail = pyperclip.paste()
 
         tracking_numbers = []
-        for detail_button in detail_buttons:
-            detail = detail_button.get_attribute('data-clipboard-text')
+        for detail in all_detail.split('\n\n\n')[:-1]:
             tracking_number = TrackingNumber.create_from_17track_clipboard(
                 detail
             )
@@ -192,6 +192,7 @@ class Crawl17Track:
             )
         except Exception as e:
             pass
+        self.driver.implicitly_wait(2)
 
     @staticmethod
     def __chunks(l, n):
